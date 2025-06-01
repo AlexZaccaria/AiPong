@@ -1,0 +1,942 @@
+/* Reset and base styles */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: "Courier New", monospace;
+  background: linear-gradient(135deg, #0a0a0f 0%, #1a1a2e 50%, #16213e 100%);
+  color: #ffffff;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  overflow: hidden;
+  position: relative;
+}
+
+/* Subtle geometric pattern overlay */
+body::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: linear-gradient(
+      90deg,
+      rgba(255, 255, 255, 0.02) 1px,
+      transparent 1px
+    ),
+    linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+  background-size: 50px 50px;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0.5;
+}
+
+/* Main game container */
+.game-container {
+  position: relative;
+  width: 100%;
+  max-width: 900px;
+  aspect-ratio: 4/3;
+  background: linear-gradient(
+    145deg,
+    rgba(15, 15, 25, 0.95) 0%,
+    rgba(25, 25, 40, 0.9) 50%,
+    rgba(15, 15, 25, 0.95) 100%
+  );
+  border: 2px solid rgba(255, 255, 255, 0.1);
+  border-radius: 20px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3),
+    0 0 0 1px rgba(255, 255, 255, 0.05), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  margin-bottom: 25px;
+  z-index: 1;
+  overflow: hidden;
+  backdrop-filter: blur(10px);
+}
+
+/* Subtle border glow */
+.game-container::before {
+  content: "";
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  right: -2px;
+  bottom: -2px;
+  background: linear-gradient(
+    45deg,
+    rgba(0, 255, 255, 0.3),
+    rgba(255, 255, 255, 0.1),
+    rgba(0, 255, 255, 0.3)
+  );
+  border-radius: 22px;
+  z-index: -1;
+  opacity: 0.7;
+}
+
+/* Game canvas */
+#game-canvas {
+  width: 100%;
+  height: 100%;
+  display: block;
+  border-radius: 18px;
+  cursor: none;
+  position: relative;
+  z-index: 2;
+  background: transparent;
+}
+
+/* Overlay UI */
+.ui-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  pointer-events: none;
+  z-index: 10;
+}
+
+/* Enhanced score display */
+.score {
+  position: absolute;
+  top: 25px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 2.5rem;
+  font-weight: bold;
+  color: #00ff00;
+  text-shadow: 0 0 5px rgba(0, 255, 0, 0.8), 0 2px 4px rgba(0, 0, 0, 0.8);
+  pointer-events: none;
+  font-variant-numeric: tabular-nums;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 40px;
+}
+
+#player1-score {
+  order: 1;
+}
+
+#player2-score {
+  order: 3;
+}
+
+.separator {
+  margin: 0;
+  opacity: 0.8;
+  color: #ffffff;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1em;
+  line-height: 1;
+  letter-spacing: 0;
+  order: 2;
+}
+
+/* Game status messages - ENHANCED MODERN DESIGN */
+.game-status {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  pointer-events: auto;
+}
+
+.message {
+  /* Enhanced modern base with glassmorphism */
+  background: linear-gradient(
+    135deg,
+    rgba(15, 25, 50, 0.95) 0%,
+    rgba(25, 40, 80, 0.85) 50%,
+    rgba(10, 20, 40, 0.95) 100%
+  );
+
+  /* Modern padding and shape */
+  padding: 50px 60px;
+  border-radius: 24px;
+
+  /* Animated gradient border */
+  border: 2px solid transparent;
+  background-clip: padding-box;
+  position: relative;
+
+  /* Enhanced modern shadows and depth */
+  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5), 0 15px 35px rgba(0, 100, 200, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1), inset 0 -1px 0 rgba(0, 0, 0, 0.1),
+    0 0 0 1px rgba(100, 200, 255, 0.3);
+
+  /* Enhanced glassmorphism effect */
+  backdrop-filter: blur(20px) saturate(180%);
+
+  /* Stable cursor and transition */
+  cursor: pointer;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow: hidden;
+
+  /* Ensure it stays in position */
+  transform: none;
+}
+
+/* Animated gradient border */
+.message::before {
+  content: "";
+  position: absolute;
+  inset: -2px;
+  background: linear-gradient(
+    45deg,
+    rgba(100, 200, 255, 0.6) 0%,
+    rgba(150, 220, 255, 0.3) 25%,
+    rgba(80, 180, 255, 0.6) 50%,
+    rgba(120, 200, 255, 0.3) 75%,
+    rgba(100, 200, 255, 0.6) 100%
+  );
+  background-size: 300% 300%;
+  border-radius: 26px;
+  z-index: -2;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+  animation: gradientShift 3s ease-in-out infinite;
+}
+
+/* Decorative background pattern */
+.message::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: radial-gradient(
+      circle at 20% 30%,
+      rgba(100, 200, 255, 0.1) 1px,
+      transparent 1px
+    ),
+    radial-gradient(
+      circle at 80% 70%,
+      rgba(150, 220, 255, 0.08) 1px,
+      transparent 1px
+    ),
+    radial-gradient(
+      circle at 40% 80%,
+      rgba(120, 180, 255, 0.06) 1px,
+      transparent 1px
+    );
+  background-size: 50px 50px, 80px 80px, 60px 60px;
+  background-position: 0 0, 20px 20px, 40px 10px;
+  border-radius: 24px;
+  z-index: -1;
+  opacity: 0.7;
+  animation: patternFloat 8s ease-in-out infinite;
+}
+
+/* Luminous overlay for depth effect */
+.message > * {
+  position: relative;
+  z-index: 2;
+}
+
+/* ENHANCED hover effect */
+.message:hover {
+  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.6), 0 20px 40px rgba(0, 150, 255, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.15), inset 0 -1px 0 rgba(0, 0, 0, 0.1),
+    0 0 0 1px rgba(150, 220, 255, 0.6), 0 0 20px rgba(100, 200, 255, 0.4);
+}
+
+.message:hover::before {
+  opacity: 1;
+}
+
+.message:hover::after {
+  opacity: 1;
+  animation-duration: 4s;
+}
+
+/* Title style with enhanced neon effect */
+.message h2 {
+  font-size: 3.2rem;
+  margin-bottom: 24px;
+  background: linear-gradient(135deg, #ffffff 0%, #e0f0ff 50%, #c0e0ff 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  font-weight: 800;
+  position: relative;
+  filter: drop-shadow(0 2px 8px rgba(100, 200, 255, 0.3));
+}
+
+/* Neon glow effect for title */
+.message h2::before {
+  content: attr(data-text);
+  position: absolute;
+  top: 0;
+  left: 0;
+  color: rgba(150, 220, 255, 0.4);
+  z-index: -1;
+  filter: blur(6px);
+  animation: neonPulse 2s ease-in-out infinite alternate;
+}
+
+/* New paragraph style with subtle glow */
+.message p {
+  font-size: 1.3rem;
+  margin-bottom: 16px;
+  color: rgba(220, 240, 255, 0.9);
+  font-weight: 400;
+  line-height: 1.6;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3), 0 0 12px rgba(100, 200, 255, 0.2);
+  opacity: 1;
+  position: relative;
+}
+
+/* Animated modern decorative line */
+.message p:last-child::after {
+  content: "";
+  position: absolute;
+  bottom: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 80px;
+  height: 2px;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(100, 200, 255, 0.8) 20%,
+    rgba(150, 220, 255, 1) 50%,
+    rgba(100, 200, 255, 0.8) 80%,
+    transparent 100%
+  );
+  border-radius: 1px;
+  animation: lineShimmer 2s ease-in-out infinite;
+}
+
+/* Animations for new effects */
+@keyframes gradientShift {
+  0%,
+  100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+@keyframes patternFloat {
+  0%,
+  100% {
+    transform: translateY(0px) translateX(0px);
+  }
+  25% {
+    transform: translateY(-2px) translateX(1px);
+  }
+  50% {
+    transform: translateY(-1px) translateX(-1px);
+  }
+  75% {
+    transform: translateY(1px) translateX(0px);
+  }
+}
+
+@keyframes neonPulse {
+  0% {
+    opacity: 0.4;
+    filter: blur(6px);
+  }
+  100% {
+    opacity: 0.6;
+    filter: blur(4px);
+  }
+}
+
+@keyframes lineShimmer {
+  0%,
+  100% {
+    opacity: 0.6;
+    transform: translateX(-50%) scaleX(1);
+  }
+  50% {
+    opacity: 1;
+    transform: translateX(-50%) scaleX(1.1);
+  }
+}
+
+.hidden {
+  display: none;
+}
+
+/* Completely redesigned game controls */
+.controls {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1;
+  position: relative;
+  max-width: 900px;
+  width: 100%;
+}
+
+.controls-section {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+/* Game controls section */
+.game-controls {
+  padding: 20px 30px;
+  background: linear-gradient(
+    135deg,
+    rgba(15, 25, 45, 0.9),
+    rgba(25, 35, 55, 0.8)
+  );
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+}
+
+/* Modern buttons */
+.control-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 20px;
+  border: none;
+  border-radius: 12px;
+  font-family: inherit;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+  min-width: 110px;
+  justify-content: center;
+}
+
+.btn-icon {
+  font-size: 1.2rem;
+}
+
+.btn-text {
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+/* Button type styles */
+.control-btn.primary {
+  background: linear-gradient(135deg, #4ade80, #22c55e);
+  color: #000;
+  box-shadow: 0 4px 12px rgba(34, 197, 94, 0.3);
+}
+
+.control-btn.primary:hover {
+  background: linear-gradient(135deg, #22c55e, #16a34a);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(34, 197, 94, 0.4);
+}
+
+.control-btn.secondary {
+  background: linear-gradient(135deg, #60a5fa, #3b82f6);
+  color: #fff;
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+}
+
+.control-btn.secondary:hover {
+  background: linear-gradient(135deg, #3b82f6, #2563eb);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(59, 130, 246, 0.4);
+}
+
+.control-btn.tertiary {
+  background: linear-gradient(135deg, #a78bfa, #8b5cf6);
+  color: #fff;
+  box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
+}
+
+.control-btn.tertiary:hover {
+  background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(139, 92, 246, 0.4);
+}
+
+.control-btn:active {
+  transform: translateY(0px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* Responsive controls */
+@media (max-width: 768px) {
+  .controls {
+    padding: 0 20px;
+  }
+
+  .controls-section {
+    gap: 15px;
+  }
+
+  .game-controls {
+    padding: 15px 20px;
+  }
+
+  .control-btn {
+    padding: 10px 16px;
+    min-width: 100px;
+    font-size: 0.9rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .controls-section {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .game-controls {
+    width: 100%;
+    max-width: 350px;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .control-btn {
+    width: 100%;
+    max-width: 200px;
+  }
+}
+
+/* Animazioni migliorate */
+/* @keyframes pulse {
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.8;
+    transform: scale(1.02);
+  }
+} */
+
+/* Remove pulse animation from messages */
+/* .message {
+  animation: pulse 3s infinite ease-in-out;
+} */
+
+@keyframes scoreUpdate {
+  0% {
+    transform: translateX(-50%) scale(1);
+    color: #00ff00;
+  }
+  25% {
+    transform: translateX(-50%) scale(1.3);
+    color: #ffff00;
+  }
+  50% {
+    transform: translateX(-50%) scale(1.2);
+    color: #ff8000;
+  }
+  75% {
+    transform: translateX(-50%) scale(1.1);
+    color: #ff4000;
+  }
+  100% {
+    transform: translateX(-50%) scale(1);
+    color: #00ff00;
+  }
+}
+
+.score-update {
+  animation: scoreUpdate 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+/* Remove distracting loading dots */
+/* @keyframes loadingDots {
+  0%,
+  20% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.5);
+    opacity: 0.7;
+  }
+  80%,
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+} */
+
+/* Remove loading dots from paragraphs */
+/* .message p::after {
+  content: "";
+  display: inline-block;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: currentColor;
+  margin-left: 4px;
+  animation: loadingDots 1.5s infinite;
+}
+
+.message p:nth-child(3)::after {
+  animation-delay: 0.2s;
+}
+
+.message p:nth-child(4)::after {
+  animation-delay: 0.4s;
+} */
+
+/* Hover effects for touch devices */
+@media (hover: none) {
+  .message:hover {
+    /* No movement on touch devices */
+    transform: none;
+    border-color: rgba(150, 220, 255, 0.6);
+  }
+
+  button:hover {
+    transform: none;
+  }
+}
+
+/* Enhanced responsive design */
+@media (max-width: 768px) {
+  body {
+    padding: 15px;
+  }
+
+  .game-container {
+    max-width: 100%;
+    aspect-ratio: 3/2;
+    margin-bottom: 20px;
+  }
+
+  .score {
+    font-size: 2rem;
+    top: 15px;
+    gap: 25px;
+  }
+
+  .separator {
+    margin: 0 25px;
+  }
+
+  .message {
+    padding: 35px 40px;
+    margin: 0 15px;
+    border-radius: 20px;
+  }
+
+  .message h2 {
+    font-size: 2.4rem;
+    margin-bottom: 18px;
+  }
+
+  .message p {
+    font-size: 1.1rem;
+    margin-bottom: 14px;
+  }
+}
+
+@media (max-width: 480px) {
+  .game-container {
+    aspect-ratio: 1/1;
+  }
+
+  .score {
+    font-size: 1.5rem;
+    gap: 15px;
+  }
+
+  .separator {
+    margin: 0 15px;
+  }
+
+  .message {
+    padding: 25px 30px;
+    border-radius: 16px;
+  }
+
+  .message h2 {
+    font-size: 2rem;
+    margin-bottom: 16px;
+  }
+
+  .message p {
+    font-size: 1rem;
+    margin-bottom: 12px;
+  }
+}
+
+/* Mobile Fullscreen Styles */
+body.mobile-fullscreen {
+  padding: 0;
+  margin: 0;
+  overflow: hidden;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100vw;
+  height: 100vh;
+  /* Hide the address bar better */
+  height: 100dvh; /* Dynamic viewport height */
+}
+
+body.mobile-fullscreen::before {
+  display: none;
+}
+
+.game-container.mobile-fullscreen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100vw;
+  height: 100vh;
+  height: 100dvh; /* Dynamic viewport height */
+  max-width: none;
+  max-height: none;
+  margin: 0;
+  border-radius: 0;
+  backdrop-filter: none;
+  background: rgba(5, 10, 30, 0.95);
+  z-index: 9999;
+}
+
+.game-container.mobile-fullscreen::before {
+  display: none;
+}
+
+/* Hide controls completely in mobile fullscreen */
+body.mobile-fullscreen .controls {
+  display: none;
+}
+
+/* Hide controls completely in desktop fullscreen */
+body:-webkit-full-screen .controls,
+body:-moz-full-screen .controls,
+body:-ms-fullscreen .controls,
+body:fullscreen .controls {
+  display: none;
+}
+
+/* Landscape mode optimizations - not needed since controls are hidden */
+/* @media screen and (orientation: landscape) {
+  body.mobile-fullscreen .controls {
+    bottom: 5px;
+    padding: 8px 12px;
+  }
+
+  body.mobile-fullscreen .control-btn {
+    padding: 6px 10px;
+    font-size: 0.75rem;
+    min-width: 70px;
+  }
+} */
+
+/* Hide scrollbars in fullscreen */
+body.mobile-fullscreen {
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
+}
+
+body.mobile-fullscreen::-webkit-scrollbar {
+  display: none; /* Chrome, Safari and Opera */
+}
+
+/* Prevent zoom on mobile fullscreen */
+body.mobile-fullscreen {
+  touch-action: manipulation;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+/* Ensure game messages work in fullscreen */
+body.mobile-fullscreen .ui-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1000;
+}
+
+body.mobile-fullscreen .score {
+  top: 10px;
+  font-size: 1.8rem;
+}
+
+body.mobile-fullscreen .message {
+  margin: 0 20px;
+  padding: 20px 25px;
+  border-radius: 15px;
+}
+
+body.mobile-fullscreen .message h2 {
+  font-size: 1.8rem;
+  margin-bottom: 12px;
+}
+
+body.mobile-fullscreen .message p {
+  font-size: 0.9rem;
+  margin-bottom: 8px;
+}
+
+/* GitHub Ribbon - Modern and elegant design */
+.github-ribbon {
+  position: fixed;
+  top: 40px;
+  right: -20px;
+  z-index: 9999;
+
+  /* Ribbon positioning */
+  transform: rotate(45deg) translate(25px, -25px);
+  transform-origin: center;
+
+  /* Ribbon styling */
+  background: linear-gradient(
+    135deg,
+    rgba(0, 255, 255, 0.9) 0%,
+    rgba(0, 200, 255, 0.8) 50%,
+    rgba(0, 150, 255, 0.9) 100%
+  );
+
+  color: #000;
+  padding: 8px 40px;
+  text-decoration: none;
+  font-family: "Courier New", monospace;
+  font-weight: 700;
+  font-size: 0.85rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+
+  /* Modern effects */
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 0 4px 12px rgba(0, 255, 255, 0.4), 0 0 20px rgba(0, 255, 255, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.3), inset 0 -1px 0 rgba(0, 0, 0, 0.1);
+
+  backdrop-filter: blur(10px);
+  transition: all 0.3s ease;
+
+  /* Internal layout */
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+
+  /* Ribbon borders */
+  border-radius: 3px;
+}
+
+.github-ribbon::before,
+.github-ribbon::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  width: 0;
+  height: 0;
+  border-style: solid;
+}
+
+.github-ribbon::before {
+  left: 0;
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+  border-top: 5px solid rgba(0, 150, 200, 0.8);
+}
+
+.github-ribbon::after {
+  right: 0;
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+  border-top: 5px solid rgba(0, 150, 200, 0.8);
+}
+
+.ribbon-text {
+  font-weight: 700;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+.ribbon-icon {
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.3));
+}
+
+/* Elegant hover effect */
+.github-ribbon:hover {
+  background: linear-gradient(
+    135deg,
+    rgba(0, 255, 255, 1) 0%,
+    rgba(0, 220, 255, 0.95) 50%,
+    rgba(0, 180, 255, 1) 100%
+  );
+
+  transform: rotate(45deg) translate(25px, -25px) scale(1.05);
+
+  box-shadow: 0 6px 20px rgba(0, 255, 255, 0.6), 0 0 30px rgba(0, 255, 255, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.4), inset 0 -1px 0 rgba(0, 0, 0, 0.1);
+}
+
+/* Subtle pulsing animation */
+@keyframes ribbon-pulse {
+  0%,
+  100% {
+    box-shadow: 0 4px 12px rgba(0, 255, 255, 0.4),
+      0 0 20px rgba(0, 255, 255, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.3),
+      inset 0 -1px 0 rgba(0, 0, 0, 0.1);
+  }
+  50% {
+    box-shadow: 0 4px 12px rgba(0, 255, 255, 0.5),
+      0 0 25px rgba(0, 255, 255, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.3),
+      inset 0 -1px 0 rgba(0, 0, 0, 0.1);
+  }
+}
+
+.github-ribbon {
+  animation: ribbon-pulse 4s ease-in-out infinite;
+}
+
+.github-ribbon:hover {
+  animation: none;
+}
+
+/* Mobile responsive */
+@media (max-width: 768px) {
+  .github-ribbon {
+    display: none;
+  }
+}
+
+@media (max-width: 480px) {
+  .github-ribbon {
+    display: none;
+  }
+}
+
+/* Hide in fullscreen to avoid interference */
+body.mobile-fullscreen .github-ribbon {
+  display: none;
+}
