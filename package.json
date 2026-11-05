@@ -1,0 +1,15 @@
+{
+  "name": "aipong",
+  "version": "2.0.0",
+  "private": true,
+  "description": "Pong in the browser against an AI that plays like a person. No framework, no build.",
+  "license": "MIT",
+  "type": "module",
+  "scripts": {
+    "start": "node tools/serve.js",
+    "test": "node --test \"test/*.test.js\""
+  },
+  "engines": {
+    "node": ">=22"
+  }
+}

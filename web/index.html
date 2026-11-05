@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="it" data-theme="light">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>AiPong</title>
+    <meta name="description" content="AiPong: Pong in the browser against an AI that plays like a person. Three levels, mouse, keyboard and touch, Italian and English. No framework, no build." />
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; font-src 'self'; connect-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'" />
+    <meta name="color-scheme" content="light dark" />
+    <meta name="theme-color" content="#f9f9f7" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#0d0d0d" media="(prefers-color-scheme: dark)" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="AiPong" />
+    <meta property="og:description" content="Pong in the browser against an AI that plays like a person." />
+    <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+    <link rel="preload" href="fonts/geist-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="stylesheet" href="css/app.css" />
+    <script src="js/boot.js"></script>
+    <script type="module" src="js/main.js"></script>
+  </head>
+  <body>
+    <div class="app" id="app">
+      <header class="topbar">
+        <a class="brand" href="./">
+          <svg class="logo" viewBox="0 0 32 32" aria-hidden="true">
+            <rect width="32" height="32" rx="9" fill="var(--ink)" />
+            <rect x="6.5" y="7.5" width="3" height="11" rx="1.5" fill="var(--page)" />
+            <rect x="22.5" y="13.5" width="3" height="11" rx="1.5" fill="var(--page)" />
+            <circle cx="16" cy="13" r="2.75" fill="var(--series-2)" />
+          </svg>
+          <span>
+            <span class="brand-name">AiPong</span>
+            <span class="brand-tagline" data-i18n="app.tagline"></span>
+          </span>
+        </a>
+        <div class="topbar-actions">
+          <button type="button" class="btn btn-ghost btn-collapse" id="btn-about" data-i18n-attr="aria-label: about.open">
+            <span data-icon="info"></span><span class="collapse-label" data-i18n="about.open"></span>
+          </button>
+          <a class="btn btn-ghost btn-collapse hide-xs" id="repo-link" target="_blank" rel="noopener" data-i18n-attr="aria-label: links.repo">
+            <span data-icon="code"></span><span class="collapse-label">GitHub</span>
+          </a>
+          <div class="prefs" data-prefs></div>
+        </div>
+      </header>
+
+      <div class="game-controls" role="group" data-i18n-attr="aria-label: game.controls">
+        <button type="button" class="btn btn-primary" id="btn-primary"></button>
+        <button type="button" class="btn btn-outline btn-collapse" id="btn-restart" data-i18n-attr="aria-label: game.restart">
+          <span data-icon="rotate-ccw"></span><span class="collapse-label" data-i18n="game.restart"></span>
+        </button>
+        <button type="button" class="icon-btn" id="btn-sound"></button>
+        <button type="button" class="icon-btn" id="btn-fullscreen"></button>
+      </div>
+
+      <main class="stage" id="stage" data-i18n-attr="aria-label: game.title">
+        <h1 class="sr-only">AiPong</h1>
+        <span class="stage-glow glow-player" id="glow-player" aria-hidden="true"></span>
+        <span class="stage-glow glow-ai" id="glow-ai" aria-hidden="true"></span>
+        <div class="field-wrap">
+          <div class="field" id="field" data-orientation="landscape">
+            <canvas id="canvas" aria-hidden="true"></canvas>
+            <div class="scoreboard" role="group" data-i18n-attr="aria-label: game.score">
+              <div class="score score-player">
+                <span class="sr-only" data-i18n="game.you"></span>
+                <span class="score-pts num" id="score-player">0</span>
+              </div>
+              <div class="score score-ai">
+                <span class="sr-only" data-i18n="game.ai"></span>
+                <span class="score-pts num" id="score-ai">0</span>
+              </div>
+            </div>
+            <span class="match-chip" id="match-chip"></span>
+            <div class="overlay" id="overlay" hidden></div>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <dialog class="sheet" id="about" aria-labelledby="about-title">
+      <div class="sheet-head">
+        <p class="sheet-title" id="about-title" data-i18n="about.open"></p>
+        <button type="button" class="icon-btn" id="about-close" data-i18n-attr="aria-label: about.close; title: about.close">
+          <span data-icon="x" data-size="18"></span>
+        </button>
+      </div>
+      <div class="sheet-body" id="about-body" tabindex="-1" autofocus></div>
+    </dialog>
+
+    <div class="sr-only" id="live" aria-live="polite"></div>
+    <noscript><p class="noscript">AiPong ha bisogno di JavaScript. · AiPong needs JavaScript.</p></noscript>
+  </body>
+</html>
