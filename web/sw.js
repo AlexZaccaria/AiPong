@@ -73,7 +73,7 @@ self.addEventListener('fetch', (event) => {
   // the cache has already answered.
   let saved = Promise.resolve();
   const network = fetch(request).then((response) => {
-    if (response.ok) {
+    if (response.status === 200) {
       const copy = response.clone();
       saved = caches.open(CACHE).then((cache) => cache.put(request, copy));
     }

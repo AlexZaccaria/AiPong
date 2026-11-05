@@ -13,6 +13,7 @@ export function initPwa() {
 
   const button = document.getElementById('btn-install');
   const help = document.getElementById('install-help');
+  if (!button) return;
   let prompt = null;
   const show = (visible) => {
     button.hidden = !visible || installed();
@@ -37,7 +38,7 @@ export function initPwa() {
       prompt = null;
       show(false);
     } else if (apple) {
-      help.togglePopover?.();
+      help?.togglePopover?.();
     }
   });
 }
