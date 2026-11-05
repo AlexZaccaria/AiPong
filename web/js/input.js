@@ -23,9 +23,10 @@ export function bindInput(game, { field, isActive }) {
   });
 
   // Up/down move the paddle; with the field upright on a phone, left/right do.
-  const held = new Set();
+  const held = new Map(); // physical key -> direction, so keyup works after an orientation change
+  const norm = (key) => (key.length === 1 ? key.toLowerCase() : key);
   const direction = (key) => {
-    const k = key.length === 1 ? key.toLowerCase() : key;
+    const k = norm(key);
     if (k === 'ArrowUp' || k === 'w') return 'up';
     if (k === 'ArrowDown' || k === 's') return 'down';
     if (!game.renderer.portrait) return null;
@@ -34,7 +35,8 @@ export function bindInput(game, { field, isActive }) {
     return null;
   };
   const steer = () => {
-    game.match.control.keys = (held.has('down') ? 1 : 0) - (held.has('up') ? 1 : 0);
+    const dirs = new Set(held.values());
+    game.match.control.keys = (dirs.has('down') ? 1 : 0) - (dirs.has('up') ? 1 : 0);
   };
 
   document.addEventListener('keydown', (e) => {
@@ -45,7 +47,7 @@ export function bindInput(game, { field, isActive }) {
       // Radio groups use the arrows themselves, and outside a match the arrows scroll the page.
       if (e.target.closest?.('[role="radiogroup"]') || !game.match.running) return;
       e.preventDefault();
-      held.add(dir);
+      held.set(norm(e.key), dir);
       steer();
       return;
     }
@@ -55,6 +57,8 @@ export function bindInput(game, { field, isActive }) {
         if (inControl) return; // Space presses the focused button instead.
         e.preventDefault();
         game.primary();
+        steer(); // primary() may start a new match with keys = 0; re-apply keys still held
+
         break;
       case 'p':
         game.togglePause();
@@ -64,6 +68,7 @@ export function bindInput(game, { field, isActive }) {
         break;
       case 'r':
         game.restart();
+        steer(); // the new match starts with keys = 0; re-apply keys still held
         break;
       case 'm':
         game.toggleSound();
@@ -75,9 +80,7 @@ export function bindInput(game, { field, isActive }) {
   });
 
   document.addEventListener('keyup', (e) => {
-    const dir = direction(e.key);
-    if (!dir) return;
-    held.delete(dir);
+    if (!held.delete(norm(e.key))) return;
     steer();
   });
 
