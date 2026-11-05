@@ -87,7 +87,8 @@ async function answer(request, network) {
   const late = new Promise((resolve) => setTimeout(resolve, TIMEOUT, null));
   try {
     const response = await Promise.race([network, late]);
-    if (response) return response;
+    // Server errors (404/500, captive portal) fall through to the cache; redirects are passed on.
+    if (response && (response.ok || response.type === 'opaqueredirect')) return response;
   } catch {
     // Offline: the cache answers.
   }

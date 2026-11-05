@@ -29,7 +29,8 @@ export function initPwa() {
     prompt = null;
     show(false);
   });
-  if (apple) show(true);
+  // Without the Popover API the instructions cannot open, so the button would do nothing: keep it hidden.
+  if (apple && typeof help?.togglePopover === 'function') show(true);
 
   button.addEventListener('click', () => {
     if (prompt) {
@@ -38,7 +39,7 @@ export function initPwa() {
       prompt = null;
       show(false);
     } else if (apple) {
-      help?.togglePopover?.();
+      help?.togglePopover();
     }
   });
 }
