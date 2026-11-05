@@ -1,4 +1,5 @@
-// Wires the page together: static texts and icons, preferences, the game, the About sheet.
+// Wires the page together: static texts and icons, preferences, installation and offline play, the
+// game, the About sheet.
 
 import { Controller } from './controller.js';
 import { onLangChange, t, translate } from './i18n/i18n.js';
@@ -7,6 +8,7 @@ import { renderAbout } from './ui/about-view.js';
 import { hydrateIcons } from './ui/icons.js';
 import { PlayView } from './ui/play-view.js';
 import { PROJECT } from './project.js';
+import { initPwa } from './pwa.js';
 import { mountPreferences } from './ui/preferences.js';
 import { initTheme, onThemeChange } from './ui/theme.js';
 
@@ -15,6 +17,7 @@ hydrateIcons(document);
 document.getElementById('repo-link').href = PROJECT.repoUrl;
 initTheme();
 mountPreferences();
+initPwa();
 
 const field = document.getElementById('field');
 const about = document.getElementById('about');
