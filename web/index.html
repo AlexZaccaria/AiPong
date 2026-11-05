@@ -13,6 +13,8 @@
     <meta property="og:title" content="AiPong" />
     <meta property="og:description" content="Pong in the browser against an AI that plays like a person." />
     <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+    <link rel="manifest" href="manifest.webmanifest" />
+    <link rel="apple-touch-icon" href="icons/apple-touch-icon.png" />
     <link rel="preload" href="fonts/geist-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin />
     <link rel="stylesheet" href="css/app.css" />
     <script src="js/boot.js"></script>
@@ -34,6 +36,9 @@
           </span>
         </a>
         <div class="topbar-actions">
+          <button type="button" class="btn btn-ghost btn-collapse" id="btn-install" hidden data-i18n-attr="aria-label: install.button">
+            <span data-icon="download"></span><span class="collapse-label" data-i18n="install.button"></span>
+          </button>
           <button type="button" class="btn btn-ghost btn-collapse" id="btn-about" data-i18n-attr="aria-label: about.open">
             <span data-icon="info"></span><span class="collapse-label" data-i18n="about.open"></span>
           </button>
@@ -86,6 +91,15 @@
       </div>
       <div class="sheet-body" id="about-body" tabindex="-1" autofocus></div>
     </dialog>
+
+    <!-- Safari has no install prompt: the "Install" button shows how to add the game by hand. -->
+    <div class="install-help card" id="install-help" popover>
+      <p class="install-help-title" data-i18n="install.appleTitle"></p>
+      <ol class="install-steps">
+        <li><span class="install-step-icon"><span data-icon="share"></span></span><span data-i18n="install.appleShare"></span></li>
+        <li><span class="install-step-icon"><span data-icon="square-plus"></span></span><span data-i18n="install.appleAdd"></span></li>
+      </ol>
+    </div>
 
     <div class="sr-only" id="live" aria-live="polite"></div>
     <noscript><p class="noscript">AiPong ha bisogno di JavaScript. · AiPong needs JavaScript.</p></noscript>

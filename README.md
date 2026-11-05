@@ -9,16 +9,36 @@ a bounce off the wall coming when the ball is close. The match is played in a ne
 paddles and trails, sparks and shockwaves on every hit, "GOAL!" with a five-wave explosion, a ball
 on fire at top speed, fireworks for a win, and synthesised arcade sounds. Mouse, keyboard or a
 finger; on a phone held upright the field turns and your paddle sits under your thumb. Italian and
-English, light and dark, stats kept in the browser.
+English, light and dark, stats kept in the browser. It installs like an app and plays offline.
 
-No framework, no dependencies, no build: the browser loads the ES modules as they are written,
-and the `web/` folder is the whole site, published as it is.
+Built with the web platform alone: Canvas 2D, the Web Audio API, a Service Worker and a Web App
+Manifest, native ES modules and modern CSS. No framework, no dependencies, no build: the browser
+loads the modules as they are written, and the `web/` folder is the whole site, published as it is.
 
 | A rally (light, Italian) | "GOAL!" (light, Italian) |
 |---|---|
 | ![A rally: the floor lights up under the ball in the colour of the last paddle that hit it](docs/play-light-it.png) | ![The GOAL! text, the arena flash and the shockwave after a point](docs/goal-light-it.png) |
 | **Menu and stats (dark, English)** | **On a phone held upright (dark, Italian)** |
 | ![The start panel with difficulty, points and stats, dark theme, English](docs/menu-dark-en.png) | ![The field turned upright on a phone, dark theme](docs/phone-dark-it.png) |
+
+## Technology
+
+| Area | Technology | What it does in AiPong |
+|---|---|---|
+| Code | JavaScript, native ES modules | About thirty small modules loaded by the browser as written: no bundler, no transpiler, no dependency |
+| Graphics | Canvas 2D | The arena: a background painted once into a cached layer, glows as cached radial sprites added with `lighter` blending, a phosphor afterglow, sharp at any `devicePixelRatio` |
+| Game loop | `requestAnimationFrame`, fixed 120 Hz step | The same match at 60, 120 or 144 Hz; drawing interpolates between steps; physics in field units, not pixels |
+| Sound | Web Audio API | Every sound synthesised with oscillators, scheduled on the audio clock and levelled by a `DynamicsCompressor`; no audio file |
+| Input | Pointer Events, keyboard events | The mouse steers from anywhere on the page, a finger by dragging on the field, the arrows or W/S with held keys tracked per key |
+| Screen | Fullscreen API, `ResizeObserver`, `matchMedia` | Full screen for the whole app; the canvas follows its box; upright phones, reduced motion and the colour scheme detected live |
+| Layout and style | Cascade layers, nesting, container queries, `aspect-ratio`, `@property`, `conic-gradient` with `mask`, `color-mix()` | The arena fitted at 16:10 (10:16 upright) to whatever room is left; the panels' spinning palette border; light and dark tokens |
+| Interface | `<dialog>`, Popover API, Web Animations API | The About sheet, the install steps for iPhone and iPad, the score's flash |
+| App | Service Worker, Cache API, Web App Manifest | Offline play with network-first caching; installable, with maskable icons drawn by a script |
+| Data | `localStorage`, `Intl.NumberFormat` | Stats and settings kept in the browser; numbers written the Italian or the English way |
+| Security | Content Security Policy, escaping tagged templates | Only the site's own scripts, styles and fonts run; every text enters the page escaped |
+| Design | CSS design tokens, Geist (self-hosted), Lucide (inlined) | A monochrome chrome around a colourful arena, in light and dark |
+| Quality | `node:test` | Physics, AI, match, keyboard input, stats, settings, translations, the offline file list, the manifest and the icons |
+| Delivery | GitHub Actions, GitHub Pages | Every push to `main` that changes the site runs the tests, then publishes `web/` as it is |
 
 ## Highlights
 
@@ -68,6 +88,14 @@ and the `web/` folder is the whole site, published as it is.
   monochrome and the colour lives in the arena; the panels over it turn the palette into a slowly
   spinning border. Theme and language are set before the first paint, and the theme follows the
   system until one is picked.
+- **Installable, playable offline.** A Web App Manifest with maskable icons (drawn from the logo's
+  geometry by `tools/make-icons.js`) makes the game installable; on phones it then opens without
+  the browser's bars, which on iPhone, where Safari has no element full screen, is the way to play
+  almost full screen. The service worker caches every file at install and answers network-first:
+  online visits always get the published version and refresh the cache, and the cache answers when
+  the network is missing or slower than 3 s, so there is no version number to bump. The list of
+  cached files is kept equal to `web/` by a test. An *Install* button shows the browser's own
+  prompt on Chromium browsers and the two taps to add the game to the Home Screen on iPhone and iPad.
 - **Accessible.** Playable from the keyboard alone; points, pauses and results are announced in a
   polite live region; keyboard focus follows the panels as they open and close; with *reduce
   motion* there is no shake, trail, afterglow, particle or flash, and "GOAL!" does not pulse; zoom
@@ -102,26 +130,17 @@ requestAnimationFrame                                    controller.js
                             the stage lights behind it                       ui/play-view.js
 ```
 
-## Stack
-
-| Layer | Choice |
-|---|---|
-| Page | HTML, CSS (cascade layers, nesting, container queries), JavaScript ES modules; no framework, no build |
-| Game | Canvas 2D, Web Audio API, Pointer Events, Fullscreen API |
-| Design | CSS design tokens and components, Geist (self-hosted), Lucide icons (inlined) |
-| Tests | `node:test`, Node.js ≥ 22 |
-| Hosting | GitHub Pages, published by a GitHub Actions workflow after the tests |
-
 ## Getting started
 
 ```sh
 npm start     # http://localhost:4400, served by tools/serve.js (no dependencies)
-npm test      # physics, AI, match, keyboard input, stats, settings, translations
+npm test      # physics, AI, match, keyboard input, stats, settings, translations, offline, install
 ```
 
-There is nothing to install. Opening `web/index.html` straight from the disk does not work:
-browsers don't load ES modules from `file://`, so any static server will do (`PORT=8080 npm start`
-for another port).
+There is nothing to install but Node.js 22 or later. Opening `web/index.html` straight from the
+disk does not work: browsers don't load ES modules from `file://`, so any static server will do
+(`PORT=8080 npm start` for another port). The service worker registers on `localhost` too; since
+it answers network-first, edits show up on a normal reload.
 
 ## Publishing
 
@@ -140,18 +159,23 @@ push to main
 Once, in the repository: *Settings → Pages → Build and deployment → Source: GitHub Actions*. The
 workflow can also be started by hand from the *Actions* tab. The Content Security Policy is a
 `<meta>` tag in `web/index.html`, so it travels with the files; GitHub Pages adds no custom headers.
+Installed copies pick up a new deployment at their next online start, through the service worker.
 
 ## Project structure
 
 ```
 AiPong/
   ├─ web/                        the site, published as it is
-  │    ├─ index.html             header, stage, About sheet; CSP
+  │    ├─ index.html             header, stage, About sheet, install steps; CSP
+  │    ├─ manifest.webmanifest   name, colours, icons: what makes it installable
+  │    ├─ sw.js                  service worker: the offline cache
   │    ├─ css/app.css            design tokens, components, layout
   │    ├─ fonts/                 Geist (OFL)
+  │    ├─ icons/                 app icons (any, maskable, Apple), drawn by tools/make-icons.js
   │    └─ js/
   │         ├─ boot.js           theme and language before the first paint
   │         ├─ main.js           wires the page together
+  │         ├─ pwa.js            service worker registration, the Install button
   │         ├─ project.js        author and repository address, in one place
   │         ├─ controller.js     the loop, events, actions
   │         ├─ input.js          mouse, touch, keyboard
@@ -163,6 +187,7 @@ AiPong/
   │         └─ ui/               play view, About, segmented control, preferences, icons, html
   ├─ test/                       node:test suites
   ├─ tools/serve.js              static server for development
+  ├─ tools/make-icons.js         draws the app icons as PNG, no dependencies
   ├─ docs/                       screenshots
   ├─ .github/workflows/pages.yml tests, then publishing on GitHub Pages
   └─ LICENSE                     MIT
@@ -174,12 +199,14 @@ AiPong/
 |---|---|
 | `npm start` | Serves `web/` on http://localhost:4400 |
 | `npm test` | Runs every suite in `test/` with `node:test` (the workflow runs it before publishing) |
+| `npm run icons` | Draws the app icons into `web/icons/` from the logo's geometry, byte for byte |
 
 ## Privacy
 
 Nothing leaves the browser: the page makes no network request beyond its own files. Settings,
 stats, theme, language and sound are kept in `localStorage` under the `aipong.*` keys; *Reset* in
-the stats panel clears the stats.
+the stats panel clears the stats. The service worker keeps a copy of the site's own files in the
+browser's Cache Storage, for offline play.
 
 ## About the project
 
