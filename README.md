@@ -116,7 +116,7 @@ requestAnimationFrame                                    controller.js
 
 ```sh
 npm start     # http://localhost:4400, served by tools/serve.js (no dependencies)
-npm test      # physics, AI, match, stats, settings, translations
+npm test      # physics, AI, match, keyboard input, stats, settings, translations
 ```
 
 There is nothing to install. Opening `web/index.html` straight from the disk does not work:

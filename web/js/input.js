@@ -22,8 +22,10 @@ export function bindInput(game, { field, isActive }) {
     if (e.pointerType !== 'mouse' && field.hasPointerCapture(e.pointerId)) aim(e);
   });
 
-  // Up/down move the paddle; with the field upright on a phone, left/right do.
-  const held = new Map(); // physical key -> direction, so keyup works after an orientation change
+  // Up/down move the paddle; with the field upright on a phone, left/right do. Held keys are kept
+  // by key, not by direction: a key released after the field turned, or while another key for the
+  // same direction is still down, is released correctly.
+  const held = new Map();
   const norm = (key) => (key.length === 1 ? key.toLowerCase() : key);
   const direction = (key) => {
     const k = norm(key);
@@ -57,8 +59,7 @@ export function bindInput(game, { field, isActive }) {
         if (inControl) return; // Space presses the focused button instead.
         e.preventDefault();
         game.primary();
-        steer(); // primary() may start a new match with keys = 0; re-apply keys still held
-
+        steer(); // a rematch is a new match, with keys = 0: re-apply the keys still held
         break;
       case 'p':
         game.togglePause();
@@ -67,8 +68,8 @@ export function bindInput(game, { field, isActive }) {
         game.match.pause();
         break;
       case 'r':
+        // Back to the menu: held keys steer again once the next match runs (Space re-applies them).
         game.restart();
-        steer(); // the new match starts with keys = 0; re-apply keys still held
         break;
       case 'm':
         game.toggleSound();
