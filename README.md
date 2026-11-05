@@ -1,256 +1,193 @@
-# Pong Game 🏓
+# AiPong
 
-A classic Pong game built entirely with HTML5, CSS3, and vanilla JavaScript. Responsive and modern with captivating visual effects.
+**Classic Pong in the browser, against an AI that plays like a person.**
 
-> **🤖 AI-Powered Development**: This entire project was developed using **Claude 4 Sonnet** AI assistant. From initial concept to final implementation, every line of code, design decision, and feature was created through AI collaboration.
+**[Play it → alexzaccaria.github.io/AiPong](https://alexzaccaria.github.io/AiPong/)**
 
-## 🎮 How to Play
+The computer's paddle reacts a moment late, aims a little off and, below the hard level, only sees
+a bounce off the wall coming when the ball is close. The match is played in a neon arena: glowing
+paddles and trails, sparks and shockwaves on every hit, "GOAL!" with a five-wave explosion, a ball
+on fire at top speed, fireworks for a win, and synthesised arcade sounds. Mouse, keyboard or a
+finger; on a phone held upright the field turns and your paddle sits under your thumb. Italian and
+English, light and dark, stats kept in the browser.
 
-### Controls
+No framework, no dependencies, no build: the browser loads the ES modules as they are written,
+and the `web/` folder is the whole site, published as it is.
 
-- **Mouse**: Move mouse up and down to control your paddle (left)
-- **Click**: Start/pause/resume the game
-- **Spacebar**: Start/pause/resume the game
-- **P**: Pause/resume
-- **R**: Reset game
-- **F**: Toggle fullscreen
-- **Esc**: Exit fullscreen
+| A rally (light, Italian) | "GOAL!" (light, Italian) |
+|---|---|
+| ![A rally: the floor lights up under the ball in the colour of the last paddle that hit it](docs/play-light-it.png) | ![The GOAL! text, the arena flash and the shockwave after a point](docs/goal-light-it.png) |
+| **Menu and stats (dark, English)** | **On a phone held upright (dark, Italian)** |
+| ![The start panel with difficulty, points and stats, dark theme, English](docs/menu-dark-en.png) | ![The field turned upright on a phone, dark theme](docs/phone-dark-it.png) |
 
-### Objective
+## Highlights
 
-- Reach **3 points** to win
-- Prevent the ball from passing your paddle
-- Hit the ball to send it back to the computer
+- **An opponent that plays like a person.** It looks at the ball only every `reaction` seconds,
+  picks a slightly wrong spot each time the ball comes its way, moves at a limited speed, and only
+  the hard level works out bounces off the walls in advance. The three levels were tuned by
+  simulation: against a player who reaches every ball, the AI returns on average about 4 (easy),
+  7 (medium) and 14 (hard) shots before missing one, and a test keeps that order.
+- **Fixed-step physics in field units.** The match advances 120 steps per second whatever the
+  display (60, 120 or 144 Hz play the same) and drawing interpolates between steps. Sizes and
+  speeds are in units of a 160 × 100 field, so the ball crosses it in the same time on a phone
+  and on a 27" monitor; the canvas follows the screen's pixel density.
+- **Rallies that speed up, shots you can shape.** Every hit makes the ball 5% faster, up to three
+  times the serve speed (about 23 hits) at every level; where it meets the paddle sets the angle,
+  and the paddle's own movement at that moment adds spin.
+- **A neon arena.** Each half is lit in its side's colour, with goal lines and corner brackets to
+  match; the ball waits for the serve in a centre circle, violet, while a timer ring fills up. The
+  hexagonal floor lights up under the ball, glowing paddles and the ball cast light on it, a pulse
+  of energy runs along the net and motes drift in the light. The ball's halo takes the colour of
+  the last paddle that hit it; light trails and a short phosphor afterglow follow everything that
+  moves, with speed streaks and a spinning ring on a fast ball. Every hit throws sparks and a
+  shockwave, lights up the floor around it and shakes the screen, harder the faster the ball
+  (wall bounces and points too); every fifth hit of a rally is a golden milestone; above 80% of
+  its top speed the ball catches fire, sheds embers and makes the whole arena tremble. A point
+  brings "GOAL!" in the scorer's colour with the five-wave explosion of the first AiPong (burst,
+  second burst, sparkles, confetti, a shower of glitter), a wave of lit cells sweeping the floor
+  from the edge the ball crossed, an arena flash and the score lighting up; a win ends in
+  confetti and fireworks. Around the arena, a dot grid and one light
+  per side that breathes and flares when its paddle hits or scores. The arena is dark in both
+  themes, and every delayed wave runs on the game clock, so a pause freezes it mid-air.
+- **Synthesised arcade sound.** Square-wave hits whose pitch rises with the ball's speed, the angle
+  of the shot and the length of the rally, a fanfare for your points, sawtooth notes for the AI's,
+  chimes for rally milestones: all generated with the Web Audio API, scheduled on the audio clock
+  and levelled by a compressor, with no audio file.
+- **Time belongs to the match.** Serves and the pause after a point are counted in game time inside
+  the match's state machine: a pause freezes them, and a new match is a new object. The first
+  version scheduled them with `setTimeout`, so a pause right after a point froze the match for good
+  and a reset during the last point ended the fresh 0–0 with "Computer wins!"; tests cover both.
+- **One page, the game.** The arena takes the screen: a single bar on top holds the match
+  controls where there is room (wide screens, phones on their side) and the score sits on the
+  arena, either side of the net as in the original Pong; on narrow screens the controls move
+  under the arena. Full screen covers the whole app, so the controls stay at hand. The start panel
+  over the field is the menu: difficulty, points to win, stats and keys. *About* opens in a sheet
+  over the game (and pauses it); `#about` links to it.
+- **A design system in plain CSS.** Tokens for page, surfaces and ink, a categorical palette with
+  its own dark steps, Geist, Lucide icons, cards and segmented controls. The chrome stays
+  monochrome and the colour lives in the arena; the panels over it turn the palette into a slowly
+  spinning border. Theme and language are set before the first paint, and the theme follows the
+  system until one is picked.
+- **Accessible.** Playable from the keyboard alone; points, pauses and results are announced in a
+  polite live region; keyboard focus follows the panels as they open and close; with *reduce
+  motion* there is no shake, trail, afterglow, particle or flash, and "GOAL!" does not pulse; zoom
+  is never blocked.
+- **Safe by construction.** A Content Security Policy allows only the site's own scripts, styles and
+  fonts, and markup is built with a tagged template that escapes every value it is given.
 
-## 🚀 Features
-
-### 🎯 Gameplay
-
-- **Fluid mouse controls** for precise paddle movement
-- **Adaptive AI** for computer opponent
-- **Progressive difficulty** with speed increases per rally
-- **Best-of-5 scoring system** (first to 3 points wins)
-- **Realistic ball physics** with acceleration and spin effects
-
-### 🎨 Graphics and Effects
-
-- **Modern design** with cyberpunk theme
-- **Glow effects** for paddles and ball
-- **Ball trail** with dynamic opacity
-- **Smooth 60 FPS animations**
-- **Particle effects** on bounces and goals
-- **Responsive interface** with visual feedback
-- **Enhanced message boxes** with animated borders and neon effects
-
-### 📱 Responsive Design
-
-- **Fully responsive** for all devices
-- **Automatic adaptation** to screen dimensions
-- **Optimized controls** for mobile and desktop
-- **Flexible layout** that maintains proportions
-- **Mobile fullscreen mode** with gesture support
-
-### ⚙️ Advanced Features
-
-- **Automatic pause** when switching tabs/windows
-- **Keyboard shortcuts** for quick controls
-- **Fullscreen support** for immersive gameplay
-- **Dynamic game states** (start, playing, paused, gameOver)
-- **Responsive canvas** with automatic resizing
-- **Sound effects** with Web Audio API
-- **Goal celebrations** with confetti and particle explosions
-
-## 🛠️ Technologies Used
-
-- **HTML5 Canvas** for game rendering
-- **CSS3** with flexbox and animations for responsive layout
-- **JavaScript ES6+** with modern classes and modules
-- **RequestAnimationFrame** for smooth animations
-- **ResizeObserver API** for responsive canvas
-- **Web Audio API** for sound effects
-- **CSS Custom Properties** for theming
-- **Glassmorphism** and modern UI design patterns
-
-## 🤖 AI Development Process
-
-### **Developed with Claude 4 Sonnet**
-
-This project represents a **complete AI-assisted development workflow**, showcasing the capabilities of modern AI in software development:
-
-#### **🎯 What Claude 4 Sonnet Created:**
-
-- **✅ Complete codebase** - 100% of HTML, CSS, and JavaScript
-- **✅ Game logic and physics** - Ball movement, collision detection, AI opponent
-- **✅ Modern UI/UX design** - Glassmorphism effects, animations, responsive layout
-- **✅ Advanced features** - Fullscreen support, particle effects, sound system
-- **✅ Performance optimization** - 60 FPS rendering, efficient algorithms
-- **✅ Cross-platform compatibility** - Desktop and mobile support
-- **✅ Complete documentation** - This README and code comments
-
-#### **🔧 Development Highlights:**
-
-- **Iterative refinement** through conversational development
-- **Real-time debugging** and feature enhancement
-- **Modern web standards** implementation
-- **Responsive design** principles
-- **Performance optimization** techniques
-- **Code quality** and best practices
-
-#### **🎨 AI-Generated Features:**
-
-- **Dynamic particle systems** for visual effects
-- **Adaptive AI opponent** with human-like behavior
-- **Progressive difficulty scaling**
-- **Modern glassmorphism UI** with neon effects
-- **Comprehensive sound design** using Web Audio API
-- **Mobile-optimized fullscreen experience**
-
-### **Development Stats:**
-
-- **📝 Lines of Code**: ~1,600+ (JavaScript: ~1,400, CSS: ~800, HTML: ~80)
-- **⏱️ Development Time**: Created in real-time conversation
-- **🔄 Iterations**: Multiple refinements and feature additions
-- **🎯 Zero Human Coding**: 100% AI-generated implementation
-- **✨ Features Added**: 15+ major game features and effects
-
-### **Technical Achievements:**
-
-- **Modern ES6+ JavaScript** with classes and modules
-- **Advanced CSS animations** and glassmorphism effects
-- **Responsive canvas rendering** with ResizeObserver
-- **Efficient particle systems** and collision detection
-- **Cross-browser compatibility** and mobile optimization
-- **Performance monitoring** and frame rate optimization
-
-> **💡 This project demonstrates how AI can create complete, production-ready web applications with modern standards, responsive design, and advanced features - all through natural language conversation.**
-
-## 📁 Project Structure
+## How a frame works
 
 ```
-/
-├── index.html          # Main game page
-├── style.css          # Responsive CSS styles
-├── script.js          # JavaScript game logic
-├── README.md          # This documentation
-└── LICENSE            # MIT License
+requestAnimationFrame                                    controller.js
+  ├─ add the time elapsed (at most 0.1 s: a hidden tab is not caught up)
+  ├─ step the match every 1/120 s of it                  game/match.js
+  │    ├─ player's paddle   pointer, or the keys while held
+  │    ├─ AI's paddle       reaction, aim error, top speed    game/ai.js
+  │    └─ ball              walls, paddle faces, points        game/physics.js
+  ├─ advance the effects   delayed waves, particles, rings, embers of a ball on fire   render/effects.js
+  ├─ drain the match's events
+  │    ├─ sounds            synthesised, scheduled on the audio clock   audio.js
+  │    ├─ effects           sparks, shockwaves, "GOAL!", milestones, shake
+  │    ├─ announcements     polite live region                          ui/live.js
+  │    └─ stats             at game over, saved in localStorage         stats.js
+  ├─ draw                                                               render/renderer.js
+  │    ├─ the cached arena  gradient, side colours, hexagons, goal lines, corners, net,
+  │    │                    centre circle, scan lines, vignette;
+  │    │                    laid over the last frame at half opacity (the afterglow)
+  │    ├─ in field units    motes, lit floor cells, net pulse, floor lights, flash, wall sparks,
+  │    │                    trail, speed streaks, paddles, particles and rings
+  │    │                    ("lighter" blending, cached glow sprites), ball and serve timer
+  │    └─ upright on screen rally counter and speed, "GOAL!"
+  └─ update the DOM         only the parts that changed: the score on the arena,
+                            the stage lights behind it                       ui/play-view.js
 ```
 
-## 🎯 Detailed Controls
+## Stack
 
-### Mouse
+| Layer | Choice |
+|---|---|
+| Page | HTML, CSS (cascade layers, nesting, container queries), JavaScript ES modules; no framework, no build |
+| Game | Canvas 2D, Web Audio API, Pointer Events, Fullscreen API |
+| Design | CSS design tokens and components, Geist (self-hosted), Lucide icons (inlined) |
+| Tests | `node:test`, Node.js ≥ 22 |
+| Hosting | GitHub Pages, published by a GitHub Actions workflow after the tests |
 
-- **Vertical movement**: Controls player paddle position
-- **Left click**: Starts game, resumes from pause, or restarts after game over
+## Getting started
 
-### Keyboard
+```sh
+npm start     # http://localhost:4400, served by tools/serve.js (no dependencies)
+npm test      # physics, AI, match, keyboard input, stats, settings, translations
+```
 
-- **Spacebar**: Same behavior as mouse click
-- **P**: Toggle pause/resume during gameplay
-- **R**: Complete game reset (score 0-0)
-- **F**: Toggle fullscreen mode
-- **Esc**: Exit fullscreen mode
+There is nothing to install. Opening `web/index.html` straight from the disk does not work:
+browsers don't load ES modules from `file://`, so any static server will do (`PORT=8080 npm start`
+for another port).
 
-### Interface
+## Publishing
 
-- **Pause Button**: Pause/resume the game
-- **Reset Button**: Reset game to initial state
-- **Fullscreen Button**: Toggle fullscreen mode
+`web/` is the whole site, served as it is: there is nothing to build, and every path is relative,
+so it works under GitHub Pages' `/AiPong/`. The workflow `.github/workflows/pages.yml` runs at every
+push to `main` that changes `web/`, `test/`, `package.json` or the workflow itself: it runs
+`npm test` and, if every test passes, uploads `web/` and deploys it. A push that only touches the
+README, the docs or the licence publishes nothing.
 
-## 🏆 Game Mechanics
+```
+push to main
+  ├─ test      checkout · Node LTS · npm test
+  └─ deploy    after test: configure-pages · upload-pages-artifact (web/) · deploy-pages
+```
 
-### 🎾 Ball Physics
+Once, in the repository: *Settings → Pages → Build and deployment → Source: GitHub Actions*. The
+workflow can also be started by hand from the *Actions* tab. The Content Security Policy is a
+`<meta>` tag in `web/index.html`, so it travels with the files; GitHub Pages adds no custom headers.
 
-- **Progressive speed increase** with each paddle hit
-- **Spin effects** based on paddle movement
-- **Realistic bouncing** with angle physics
-- **Speed multiplier** accumulates throughout rallies
-- **Maximum speed cap** to maintain playability
+## Project structure
 
-### 🤖 AI Behavior
+```
+AiPong/
+  ├─ web/                        the site, published as it is
+  │    ├─ index.html             header, stage, About sheet; CSP
+  │    ├─ css/app.css            design tokens, components, layout
+  │    ├─ fonts/                 Geist (OFL)
+  │    └─ js/
+  │         ├─ boot.js           theme and language before the first paint
+  │         ├─ main.js           wires the page together
+  │         ├─ project.js        author and repository address, in one place
+  │         ├─ controller.js     the loop, events, actions
+  │         ├─ input.js          mouse, touch, keyboard
+  │         ├─ audio.js          synthesised sounds
+  │         ├─ stats.js · settings.js · store.js
+  │         ├─ game/             no DOM: config, physics, AI, match, seeded random
+  │         ├─ render/           canvas renderer, effects, hexagonal floor
+  │         ├─ i18n/             it (reference shape), en
+  │         └─ ui/               play view, About, segmented control, preferences, icons, html
+  ├─ test/                       node:test suites
+  ├─ tools/serve.js              static server for development
+  ├─ docs/                       screenshots
+  ├─ .github/workflows/pages.yml tests, then publishing on GitHub Pages
+  └─ LICENSE                     MIT
+```
 
-- **Human-like reactions** with realistic delays
-- **Predictive movement** for incoming balls
-- **Occasional mistakes** to maintain challenge balance
-- **Dynamic difficulty** that adapts to ball speed
+## Scripts
 
-### 🎊 Visual Effects
+| Command | What it does |
+|---|---|
+| `npm start` | Serves `web/` on http://localhost:4400 |
+| `npm test` | Runs every suite in `test/` with `node:test` (the workflow runs it before publishing) |
 
-- **Glow effects** with dynamic intensity based on speed
-- **Particle systems** for impacts and celebrations
-- **Screen shake** on hard hits
-- **Goal celebrations** with confetti explosions
-- **Rally counter** for extended volleys
-- **Speed indicators** with visual feedback
+## Privacy
 
-## 🌟 Special Effects
+Nothing leaves the browser: the page makes no network request beyond its own files. Settings,
+stats, theme, language and sound are kept in `localStorage` under the `aipong.*` keys; *Reset* in
+the stats panel clears the stats.
 
-- **Animated UI elements** with glassmorphism
-- **Neon text effects** with pulsing glow
-- **Gradient borders** with flowing animations
-- **Background patterns** with floating elements
-- **Modern button designs** with hover effects
-- **Smooth transitions** throughout the interface
+## About the project
 
-## 🚀 Getting Started
+AiPong started in 2025 as a prototype, a single 1,600-line JavaScript file. It worked, with the
+limits of a prototype; it was then rewritten from scratch as a portfolio piece, in small modules,
+with the physics, the opponent and the match tested in Node.
 
-1. Clone or download the project files
-2. Open `index.html` in a modern browser
-3. Start playing by moving the mouse and clicking!
+## License
 
-**Note**: No web server or additional installations required. The game works directly by opening the HTML file in your browser.
-
-## 🔧 Customization
-
-The game is easily customizable by modifying:
-
-- **Colors**: Edit CSS variables to change the theme
-- **Speed**: Adjust speed values in JavaScript
-- **Dimensions**: Change paddle and ball sizes
-- **Max score**: Modify `maxScore` for longer/shorter games
-- **Visual effects**: Customize particle counts and animations
-
-## 🐛 Troubleshooting
-
-### Game doesn't start
-
-- Ensure you're using a modern browser with HTML5 Canvas support
-- Check the console for any JavaScript errors
-
-### Poor performance
-
-- Close other browser tabs to free up resources
-- The game automatically adapts to device performance
-
-### Unresponsive controls
-
-- Make sure mouse is over the game area
-- Check that JavaScript is enabled in your browser
-
-### Fullscreen issues
-
-- Use F key or fullscreen button for best results
-- Some browsers may require user gesture for fullscreen
-
-## 📱 Mobile Support
-
-- **Touch controls**: Tap and drag to move paddle
-- **Fullscreen mode**: Optimized for mobile gameplay
-- **Responsive design**: Adapts to all screen sizes
-- **Performance optimization**: Smooth gameplay on mobile devices
-
-## 🎮 Game Features Highlights
-
-- **No external dependencies**: Pure vanilla JavaScript
-- **Smooth animations**: 60 FPS with RequestAnimationFrame
-- **Modern UI**: Glassmorphism and neon effects
-- **Accessible controls**: Multiple input methods
-- **Cross-platform**: Works on desktop and mobile
-- **Fullscreen support**: Immersive gaming experience
-
-## 📧 Support
-
-For questions or issues, ensure all files are in the same folder and that your browser supports modern web APIs.
-
----
-
-**Have fun playing Pong! 🏓✨**
+[MIT](LICENSE). Third-party assets keep their own licences: Geist under the SIL Open Font License
+(`web/fonts/OFL.txt`), Lucide icons under the ISC licence (notice in `web/js/ui/icon-paths.js`).
